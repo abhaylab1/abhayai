@@ -1099,7 +1099,7 @@
   // API key lives server-side now (see /functions/api/chat.js). Never put it here.
   const MODEL = 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free';
   function buildSystemPrompt() {
-    const name = USER_NAME && USER_NAME !== 'there' ? USER_NAME : null;
+    const name = USER_NAME || null;
     return "You are AbhayAI, a helpful, friendly assistant" + (name ? ` for ${name}` : '') +
       ". Format replies with markdown where useful (bold for key terms, code blocks for code, lists for steps). Keep answers clear and to the point." +
       (name ? ` Address ${name} by name occasionally when it feels natural, but don't overdo it.` : '');
@@ -1180,7 +1180,7 @@
   const NAME_STORAGE = 'abhayai_username_v1';
   let USER_NAME = localStorage.getItem(NAME_STORAGE) || '';
   function setUserName(name) {
-    USER_NAME = name.trim() || 'there';
+    USER_NAME = name.trim() || '';
     localStorage.setItem(NAME_STORAGE, USER_NAME);
     refreshUserChip();
     if (!getActive()) setGreeting();
@@ -1206,7 +1206,7 @@
     return (name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
   }
   function refreshUserChip() {
-    const label = USER_NAME || (currentUser && (currentUser.email || '').split('@')[0]) || 'Account';
+    const label = USER_NAME || (currentUser && currentUser.isAnonymous ? 'Guest' : null) || (currentUser && (currentUser.email || '').split('@')[0]) || 'Account';
     userChipName.textContent = label;
     userChipAvatar.textContent = initials(label);
     userMenuName.textContent = label;
@@ -1418,8 +1418,10 @@
 
     if (activeSettingsTab === 'account') {
       const wrap = document.createElement('div');
-      const providerLabel = currentUser && currentUser.providerData[0] && currentUser.providerData[0].providerId === 'google.com'
-        ? 'Google account' : 'Email & password';
+      const providerLabel = currentUser && currentUser.isAnonymous
+        ? 'Guest (no account)'
+        : (currentUser && currentUser.providerData[0] && currentUser.providerData[0].providerId === 'google.com'
+          ? 'Google account' : 'Email & password');
       wrap.innerHTML = `
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
           <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:#0b0b0b;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;">${initials(USER_NAME)}</div>
@@ -1445,7 +1447,7 @@
       wrap.innerHTML = `
         <img class="logo-mark" src="${document.querySelector('link[rel="icon"]').href}" alt="AbhayAI">
         <h4>AbhayAI</h4>
-        <p>A personal AI assistant built for Abhay Lab. Your chats sync to your account, so they follow you across devices.</p>`;
+        <p>Your own personal AI assistant. Your chats sync to your account, so they follow you across devices.</p>`;
       settingsContentEl.appendChild(wrap);
     }
   }
@@ -1486,7 +1488,7 @@
 
   // ---------- GREETING ----------
   function setGreeting() {
-    const name = USER_NAME && USER_NAME !== 'there' ? USER_NAME : null;
+    const name = USER_NAME || null;
     greetingText.textContent = name ? `How can I help you today, ${name}?` : 'How can I help you today?';
   }
   function renderQuickActions() {
@@ -2150,7 +2152,7 @@
     }
     currentUser = user;
     const storedName = localStorage.getItem(NAME_STORAGE);
-    USER_NAME = storedName || user.displayName || (user.email ? user.email.split('@')[0] : 'there');
+    USER_NAME = storedName || user.displayName || (user.email ? user.email.split('@')[0] : '');
     refreshUserChip();
 
     await loadSessionsFromFirestore();
