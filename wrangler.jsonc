@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developers.cloudflare.com/workers/schema.json",
+  "name": "abhaylab",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS"
+  }
+}
