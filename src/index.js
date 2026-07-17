@@ -22,7 +22,8 @@ async function handleChat(request, env) {
   const origin = request.headers.get('Origin') || '';
   const allowedOrigins = [
     'https://abhaylab.fun',
-    'https://www.abhaylab.fun'
+    'https://www.abhaylab.fun',
+    'https://abhayai.abhaylabinquiries.workers.dev' // remove once abhaylab.fun is connected
   ];
   if (origin && !allowedOrigins.includes(origin)) {
     return new Response(JSON.stringify({ error: 'Forbidden origin' }), {
