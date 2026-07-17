@@ -954,6 +954,9 @@
         </button>
       </div>
     </div>
+    <div id="guestBanner" style="display:none;margin:0 12px 8px;padding:9px 11px;background:var(--panel-hover);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);text-align:center;">
+      Chats aren't saved. <a href="login.html?mode=signin" style="color:var(--accent);font-weight:600;text-decoration:none;">Sign in</a> to keep them.
+    </div>
     <div id="sessionList"></div>
     <div class="sidebar-foot" style="position:relative;">
       <div class="overlay" id="userMenuOverlay" style="background:transparent;display:none;position:fixed;inset:0;z-index:40;"></div>
@@ -1001,6 +1004,11 @@
         </div>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;color:var(--muted);"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
+
+      <div id="guestAuthRow" style="display:none;gap:8px;margin-bottom:8px;">
+        <a href="login.html?mode=signin" style="flex:1;text-align:center;background:#fff;color:#111;border-radius:8px;padding:8px 0;font-size:12.5px;font-weight:600;text-decoration:none;">Log in</a>
+        <a href="login.html?mode=signup" style="flex:1;text-align:center;background:#262626;color:#fff;border:1px solid #333;border-radius:8px;padding:8px 0;font-size:12.5px;font-weight:600;text-decoration:none;">Sign up free</a>
+      </div>
       <style>
         .user-menu-item {
           width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: none;
@@ -1264,7 +1272,7 @@
   }
 
   function scheduleSave() {
-    if (!currentUser || !sessionsLoaded) return;
+    if (!currentUser || currentUser.isAnonymous || !sessionsLoaded) return;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       db.collection('chats').doc(currentUser.uid).set({
@@ -1275,6 +1283,12 @@
   }
 
   async function loadSessionsFromFirestore() {
+    if (!currentUser) {
+      // Guests: chats live only in memory for this tab, never synced.
+      sessions = [];
+      sessionsLoaded = true;
+      return;
+    }
     try {
       const doc = await db.collection('chats').doc(currentUser.uid).get();
       sessions = (doc.exists && Array.isArray(doc.data().sessions)) ? doc.data().sessions : [];
@@ -1413,7 +1427,10 @@
           renderAll();
         });
       });
-      settingsContentEl.appendChild(row('Chat history', clearBtn, 'Chats sync to your account. Clearing removes them everywhere, permanently.'));
+      const chatDesc = (currentUser && currentUser.isAnonymous)
+        ? "You're not signed in, so chats live only in this browser tab and are already cleared automatically when you close it."
+        : 'Chats sync to your account. Clearing removes them everywhere, permanently.';
+      settingsContentEl.appendChild(row('Chat history', clearBtn, chatDesc));
     }
 
     if (activeSettingsTab === 'account') {
@@ -2146,14 +2163,25 @@
   }
 
   auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      window.location.href = 'login.html';
-      return;
+    currentUser = (user && !user.isAnonymous) ? user : null;
+
+    const userChipEl = document.getElementById('userChip');
+    const guestAuthRow = document.getElementById('guestAuthRow');
+    const guestBanner = document.getElementById('guestBanner');
+
+    if (currentUser) {
+      userChipEl.style.display = 'flex';
+      guestAuthRow.style.display = 'none';
+      guestBanner.style.display = 'none';
+      const storedName = localStorage.getItem(NAME_STORAGE);
+      USER_NAME = storedName || currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : '');
+      refreshUserChip();
+    } else {
+      userChipEl.style.display = 'none';
+      guestAuthRow.style.display = 'flex';
+      guestBanner.style.display = 'block';
+      USER_NAME = localStorage.getItem(NAME_STORAGE) || '';
     }
-    currentUser = user;
-    const storedName = localStorage.getItem(NAME_STORAGE);
-    USER_NAME = storedName || user.displayName || (user.email ? user.email.split('@')[0] : '');
-    refreshUserChip();
 
     await loadSessionsFromFirestore();
     initApp();
