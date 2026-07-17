@@ -7,79 +7,195 @@
 <style>
   :root {
     --bg: #131313;
-    --panel: #1c1c1c;
+    --panel: #1a1a1a;
+    --field: #141414;
     --ink: #f2f2f2;
     --muted: #8f8f8f;
     --border: #262626;
     --accent: #3ddc97;
+    --accent-dim: #2a9d6f;
     --danger: #ff6b6b;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body {
-    height: 100%; margin: 0; background: var(--bg); color: var(--ink);
-    font-family: var(--sans); display: flex; align-items: center; justify-content: center;
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--sans);
+    display: grid; grid-template-columns: minmax(340px, 480px) 1fr;
   }
-  .card {
-    width: 100%; max-width: 380px; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 16px; padding: 32px 28px; margin: 16px;
+  @media (max-width: 860px) {
+    body { grid-template-columns: 1fr; }
+    .showcase { display: none; }
   }
-  h1 { font-size: 20px; margin: 0 0 4px; text-align: center; }
-  .sub { color: var(--muted); font-size: 13px; text-align: center; margin: 0 0 24px; }
-  label { display: block; font-size: 12.5px; color: var(--muted); margin: 14px 0 6px; }
-  input {
-    width: 100%; background: #141414; border: 1px solid var(--border); border-radius: 10px;
-    color: var(--ink); padding: 11px 12px; font-size: 14px; outline: none; font-family: inherit;
+
+  /* ---------- LEFT: form ---------- */
+  .form-side {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 48px 56px; position: relative;
   }
-  input:focus { border-color: var(--accent); }
-  .primary-btn {
-    width: 100%; margin-top: 20px; background: var(--accent); color: #0b0b0b; border: none;
-    border-radius: 10px; padding: 12px; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  @media (max-width: 480px) { .form-side { padding: 32px 24px; } }
+
+  .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 800;
+    font-size: 13px; color: #0b0b0b; flex-shrink: 0;
   }
-  .primary-btn:disabled { opacity: .6; cursor: default; }
-  .google-btn {
-    width: 100%; margin-top: 12px; background: #fff; color: #1f1f1f; border: none;
-    border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 500; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
+  .brand-name { font-weight: 600; font-size: 15px; letter-spacing: 0.2px; }
+
+  .headline { font-size: 26px; font-weight: 700; margin: 0 0 6px; }
+  .subhead { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
+  .field input {
+    width: 100%; background: var(--field); border: 1px solid var(--border); border-radius: 10px;
+    color: var(--ink); padding: 12px 14px; font-size: 14.5px; outline: none; font-family: inherit;
+    transition: border-color .15s ease;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .field input::placeholder { color: #565656; }
+
+  .pw-rules { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .pw-rule { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+  .pw-rule svg { flex-shrink: 0; opacity: .35; transition: opacity .15s ease, color .15s ease; }
+  .pw-rule.met { color: var(--accent); }
+  .pw-rule.met svg { opacity: 1; }
+
+  .submit-btn {
+    width: 100%; margin-top: 22px; background: var(--accent); color: #0b0b0b; border: none;
+    border-radius: 10px; padding: 13px; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .submit-btn:hover { background: #4de6a6; }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: .55; cursor: default; transform: none; }
+
   .divider {
-    display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px;
-    margin: 20px 0 4px;
+    display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px;
+    margin: 22px 0 16px;
   }
   .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .toggle-row { text-align: center; margin-top: 18px; font-size: 13px; color: var(--muted); }
-  .toggle-row button {
-    background: none; border: none; color: var(--accent); font-size: 13px; cursor: pointer; padding: 0;
+
+  .google-btn {
+    width: 100%; background: #fff; color: #1f1f1f; border: none;
+    border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
   }
+  .google-btn:hover { background: #f1f1f1; }
+
   .error-box {
     background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--danger);
-    font-size: 12.5px; padding: 9px 11px; border-radius: 8px; margin-top: 14px; display: none;
+    font-size: 12.5px; padding: 10px 12px; border-radius: 8px; margin-top: 16px; display: none;
   }
-  .logo { display: block; margin: 0 auto 16px; width: 44px; height: 44px; border-radius: 12px; }
+
+  .toggle-row { text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--muted); }
+  .toggle-row button {
+    background: none; border: none; color: var(--accent); font-size: 13.5px; font-weight: 600;
+    cursor: pointer; padding: 0; margin-left: 4px;
+  }
+
+  .field.hidden { display: none; }
+
+  /* ---------- RIGHT: showcase ---------- */
+  .showcase {
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(61,220,151,0.25), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(61,220,151,0.15), transparent 50%),
+      linear-gradient(150deg, #0d0d0d 0%, #111 55%, #0b1712 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .showcase-grid {
+    position: absolute; inset: 0; opacity: .35;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  .showcase-inner { position: relative; width: 100%; max-width: 460px; padding: 40px; }
+
+  .float-card {
+    position: absolute; background: rgba(255,255,255,0.05); backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 18px 20px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+  }
+
+  .card-headline { position: relative; margin-bottom: 190px; }
+  .card-headline h2 { font-size: 30px; line-height: 1.3; font-weight: 700; margin: 0 0 12px; color: #fff; }
+  .card-headline p { color: rgba(255,255,255,0.55); font-size: 14.5px; margin: 0; max-width: 360px; }
+
+  .card-chat { top: 210px; left: 0; width: 300px; animation: float1 7s ease-in-out infinite; }
+  .card-chat .row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .card-chat .row:last-child { margin-bottom: 0; }
+  .dot { width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+  .dot.ai { background: var(--accent); color: #0b0b0b; }
+  .dot.me { background: rgba(255,255,255,0.12); color: #fff; }
+  .bubble { font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.5; padding-top: 2px; }
+
+  .card-fast { top: 60px; right: 10px; width: 190px; animation: float2 8s ease-in-out infinite; }
+  .card-fast .big { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .card-fast .lbl { font-size: 11.5px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .card-private { bottom: 30px; right: -10px; width: 230px; animation: float3 9s ease-in-out infinite; }
+  .card-private .lbl { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .card-private .sub { font-size: 11.5px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+  @keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes float2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+  @keyframes float3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+  @media (prefers-reduced-motion: reduce) { .float-card { animation: none !important; } }
 </style>
 </head>
 <body>
 
-<div class="card">
-  <img class="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%233ddc97'/%3E%3Ctext x='12' y='16.5' font-size='11' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230b0b0b'%3EAI%3C/text%3E%3C/svg%3E" alt="AbhayAI">
-  <h1 id="formTitle">Welcome back</h1>
-  <p class="sub" id="formSub">Sign in to continue to AbhayAI</p>
+<div class="form-side">
+  <div class="brand-row">
+    <div class="brand-mark">AI</div>
+    <div class="brand-name">AbhayAI</div>
+  </div>
+
+  <h1 class="headline" id="formTitle">Welcome back</h1>
+  <p class="subhead" id="formSub">Sign in to pick up where you left off.</p>
 
   <form id="authForm">
-    <label for="email">Email</label>
-    <input type="email" id="email" autocomplete="email" required>
+    <div class="field hidden" id="nameField">
+      <label for="fullName">Full name</label>
+      <input type="text" id="fullName" placeholder="What should AbhayAI call you?" autocomplete="name">
+    </div>
 
-    <label for="password">Password</label>
-    <input type="password" id="password" autocomplete="current-password" required minlength="6">
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+    </div>
 
-    <button type="submit" class="primary-btn" id="submitBtn">Sign in</button>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required minlength="6">
+      <div class="pw-rules hidden" id="pwRules">
+        <span class="pw-rule" id="ruleLen">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          6+ characters
+        </span>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      Sign in
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </form>
 
-  <div class="divider">or</div>
+  <div class="divider">or continue with</div>
 
   <button class="google-btn" id="googleBtn">
-    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.6-.2-2.3H12v4.5h6.5c-.1 1-.7 2.6-2 3.6l3.2 2.5c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 24c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.9-1.8-5.7-4.2H3v2.6C4.6 21.4 8 24 12 24z"/><path fill="#FBBC05" d="M6.3 14.9c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.3H3c-.6 1.2-1 2.7-1 4.6s.4 3.4 1 4.6l3.3-2.6z"/><path fill="#EA4335" d="M12 5.4c1.5 0 2.8.5 3.8 1.5l2.8-2.8C16.9 2.4 14.6 1.5 12 1.5 8 1.5 4.6 4.1 3 8.3l3.3 2.6C7.1 8.5 9.4 5.4 12 5.4z"/></svg>
-    Continue with Google
+    <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.6-.2-2.3H12v4.5h6.5c-.1 1-.7 2.6-2 3.6l3.2 2.5c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 24c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.9-1.8-5.7-4.2H3v2.6C4.6 21.4 8 24 12 24z"/><path fill="#FBBC05" d="M6.3 14.9c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.3H3c-.6 1.2-1 2.7-1 4.6s.4 3.4 1 4.6l3.3-2.6z"/><path fill="#EA4335" d="M12 5.4c1.5 0 2.8.5 3.8 1.5l2.8-2.8C16.9 2.4 14.6 1.5 12 1.5 8 1.5 4.6 4.1 3 8.3l3.3 2.6C7.1 8.5 9.4 5.4 12 5.4z"/></svg>
+    Google
   </button>
 
   <div class="error-box" id="errorBox"></div>
@@ -90,14 +206,49 @@
   </div>
 </div>
 
+<div class="showcase">
+  <div class="showcase-grid"></div>
+  <div class="showcase-inner">
+    <div class="card-headline">
+      <h2>Your own AI,<br>built for how you work.</h2>
+      <p>Ask questions, brainstorm, debug code, or just think out loud. AbhayAI remembers your chats so you never lose a thread.</p>
+    </div>
+
+    <div class="float-card card-fast">
+      <div class="big">&lt;1s</div>
+      <div class="lbl">Typical response start</div>
+    </div>
+
+    <div class="float-card card-chat">
+      <div class="row">
+        <div class="dot me">Y</div>
+        <div class="bubble">Explain this error in my code</div>
+      </div>
+      <div class="row">
+        <div class="dot ai">AI</div>
+        <div class="bubble">Sure — the issue is a missing return statement on line 12...</div>
+      </div>
+    </div>
+
+    <div class="float-card card-private">
+      <div class="lbl">🔒 Private by default</div>
+      <div class="sub">Your chats are tied to your account only. Nobody else can see them.</div>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 <script src="firebase-init.js"></script>
 <script>
   const authForm = document.getElementById('authForm');
+  const nameField = document.getElementById('nameField');
+  const fullNameInput = document.getElementById('fullName');
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
+  const pwRules = document.getElementById('pwRules');
+  const ruleLen = document.getElementById('ruleLen');
   const submitBtn = document.getElementById('submitBtn');
   const errorBox = document.getElementById('errorBox');
   const googleBtn = document.getElementById('googleBtn');
@@ -106,20 +257,14 @@
   const formTitle = document.getElementById('formTitle');
   const formSub = document.getElementById('formSub');
 
-  let mode = 'signin'; // or 'signup'
+  let mode = 'signin';
 
-  // If already signed in, skip straight to the app.
   auth.onAuthStateChanged((user) => {
     if (user) window.location.href = 'index.html';
   });
 
-  function showError(msg) {
-    errorBox.textContent = msg;
-    errorBox.style.display = 'block';
-  }
-  function clearError() {
-    errorBox.style.display = 'none';
-  }
+  function showError(msg) { errorBox.textContent = msg; errorBox.style.display = 'block'; }
+  function clearError() { errorBox.style.display = 'none'; }
 
   function friendlyError(err) {
     const map = {
@@ -135,36 +280,56 @@
     return map[err.code] || err.message || 'Something went wrong. Please try again.';
   }
 
-  toggleBtn.addEventListener('click', () => {
-    mode = mode === 'signin' ? 'signup' : 'signin';
+  function setMode(next) {
+    mode = next;
     clearError();
     if (mode === 'signup') {
+      nameField.classList.remove('hidden');
+      pwRules.classList.remove('hidden');
+      passwordInput.setAttribute('autocomplete', 'new-password');
       formTitle.textContent = 'Create your account';
-      formSub.textContent = 'Sign up to start using AbhayAI';
-      submitBtn.textContent = 'Sign up';
+      formSub.textContent = "A couple of details and you're in.";
+      submitBtn.childNodes[0].textContent = 'Sign up ';
       toggleText.textContent = 'Already have an account?';
       toggleBtn.textContent = 'Sign in';
     } else {
+      nameField.classList.add('hidden');
+      pwRules.classList.add('hidden');
+      passwordInput.setAttribute('autocomplete', 'current-password');
       formTitle.textContent = 'Welcome back';
-      formSub.textContent = 'Sign in to continue to AbhayAI';
-      submitBtn.textContent = 'Sign in';
+      formSub.textContent = 'Sign in to pick up where you left off.';
+      submitBtn.childNodes[0].textContent = 'Sign in ';
       toggleText.textContent = "Don't have an account?";
       toggleBtn.textContent = 'Sign up';
     }
+  }
+
+  toggleBtn.addEventListener('click', () => setMode(mode === 'signin' ? 'signup' : 'signin'));
+
+  passwordInput.addEventListener('input', () => {
+    ruleLen.classList.toggle('met', passwordInput.value.length >= 6);
   });
 
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearError();
-    submitBtn.disabled = true;
-    submitBtn.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…';
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
+    const name = fullNameInput.value.trim();
+
+    if (mode === 'signup' && !name) {
+      showError('Please tell us what to call you.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.childNodes[0].textContent = mode === 'signup' ? 'Creating account… ' : 'Signing in… ';
 
     try {
       if (mode === 'signup') {
-        await auth.createUserWithEmailAndPassword(email, password);
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName: name });
       } else {
         await auth.signInWithEmailAndPassword(email, password);
       }
@@ -172,7 +337,7 @@
     } catch (err) {
       showError(friendlyError(err));
       submitBtn.disabled = false;
-      submitBtn.textContent = mode === 'signup' ? 'Sign up' : 'Sign in';
+      submitBtn.childNodes[0].textContent = mode === 'signup' ? 'Sign up ' : 'Sign in ';
     }
   });
 
@@ -183,9 +348,7 @@
       await auth.signInWithPopup(provider);
       window.location.href = 'index.html';
     } catch (err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        showError(friendlyError(err));
-      }
+      if (err.code !== 'auth/popup-closed-by-user') showError(friendlyError(err));
     }
   });
 </script>
