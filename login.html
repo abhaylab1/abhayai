@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign in · AbhayAI</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <style>
   :root {
     --bg: #131313;
@@ -13,7 +14,6 @@
     --muted: #8f8f8f;
     --border: #262626;
     --accent: #3ddc97;
-    --accent-dim: #2a9d6f;
     --danger: #ff6b6b;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
   }
@@ -31,17 +31,20 @@
   /* ---------- LEFT: form ---------- */
   .form-side {
     display: flex; flex-direction: column; justify-content: center;
-    padding: 48px 56px; position: relative;
+    padding: 48px 56px; position: relative; overflow: hidden;
   }
   @media (max-width: 480px) { .form-side { padding: 32px 24px; } }
 
   .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
-  .brand-mark {
-    width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
-    display: flex; align-items: center; justify-content: center; font-weight: 800;
-    font-size: 13px; color: #0b0b0b; flex-shrink: 0;
-  }
+  .brand-mark { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
   .brand-name { font-weight: 600; font-size: 15px; letter-spacing: 0.2px; }
+
+  #formContent { opacity: 1; }
+  #formContent.slide-in { animation: slideInRight .38s cubic-bezier(.2,.8,.2,1); }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(36px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
 
   .headline { font-size: 26px; font-weight: 700; margin: 0 0 6px; }
   .subhead { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
@@ -59,7 +62,7 @@
   .field input:focus { border-color: var(--accent); }
   .field input::placeholder { color: #565656; }
 
-  .pw-rules { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .pw-rules { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .pw-rule { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
   .pw-rule svg { flex-shrink: 0; opacity: .35; transition: opacity .15s ease, color .15s ease; }
   .pw-rule.met { color: var(--accent); }
@@ -99,9 +102,16 @@
     cursor: pointer; padding: 0; margin-left: 4px;
   }
 
+  .guest-row { text-align: center; margin-top: 14px; }
+  .guest-row button {
+    background: none; border: none; color: var(--muted); font-size: 12.5px; cursor: pointer;
+    text-decoration: underline; padding: 4px;
+  }
+  .guest-row button:hover { color: var(--ink); }
+
   .field.hidden { display: none; }
 
-  /* ---------- RIGHT: showcase ---------- */
+  /* ---------- RIGHT: showcase (flex layout, no overlap) ---------- */
   .showcase {
     position: relative; overflow: hidden;
     background:
@@ -117,19 +127,27 @@
       linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
     background-size: 42px 42px;
   }
-  .showcase-inner { position: relative; width: 100%; max-width: 460px; padding: 40px; }
-
-  .float-card {
-    position: absolute; background: rgba(255,255,255,0.05); backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 18px 20px;
-    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+  .showcase-inner {
+    position: relative; width: 100%; max-width: 420px; padding: 40px;
+    display: flex; flex-direction: column; gap: 22px;
   }
 
-  .card-headline { position: relative; margin-bottom: 190px; }
-  .card-headline h2 { font-size: 30px; line-height: 1.3; font-weight: 700; margin: 0 0 12px; color: #fff; }
-  .card-headline p { color: rgba(255,255,255,0.55); font-size: 14.5px; margin: 0; max-width: 360px; }
+  .card-headline h2 { font-size: 28px; line-height: 1.32; font-weight: 700; margin: 0 0 12px; color: #fff; }
+  .card-headline p { color: rgba(255,255,255,0.55); font-size: 14px; margin: 0; }
 
-  .card-chat { top: 210px; left: 0; width: 300px; animation: float1 7s ease-in-out infinite; }
+  .float-card {
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 16px 18px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+  }
+  .stat-row { display: flex; gap: 14px; }
+  .stat-row .float-card { flex: 1; }
+
+  .card-fast.float-card { animation: float2 8s ease-in-out infinite; }
+  .card-fast .big { font-size: 20px; font-weight: 800; color: var(--accent); }
+  .card-fast .lbl { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .card-chat.float-card { animation: float1 7s ease-in-out infinite; }
   .card-chat .row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
   .card-chat .row:last-child { margin-bottom: 0; }
   .dot { width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
@@ -137,72 +155,84 @@
   .dot.me { background: rgba(255,255,255,0.12); color: #fff; }
   .bubble { font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.5; padding-top: 2px; }
 
-  .card-fast { top: 60px; right: 10px; width: 190px; animation: float2 8s ease-in-out infinite; }
-  .card-fast .big { font-size: 22px; font-weight: 800; color: var(--accent); }
-  .card-fast .lbl { font-size: 11.5px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-
-  .card-private { bottom: 30px; right: -10px; width: 230px; animation: float3 9s ease-in-out infinite; }
+  .card-private.float-card { animation: float3 9s ease-in-out infinite; }
   .card-private .lbl { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
   .card-private .sub { font-size: 11.5px; color: rgba(255,255,255,0.5); line-height: 1.4; }
 
-  @keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  @keyframes float2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
-  @keyframes float3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes float2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  @keyframes float3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-  @media (prefers-reduced-motion: reduce) { .float-card { animation: none !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    .float-card, #formContent.slide-in { animation: none !important; }
+  }
 </style>
 </head>
 <body>
 
 <div class="form-side">
-  <div class="brand-row">
-    <div class="brand-mark">AI</div>
-    <div class="brand-name">AbhayAI</div>
-  </div>
-
-  <h1 class="headline" id="formTitle">Welcome back</h1>
-  <p class="subhead" id="formSub">Sign in to pick up where you left off.</p>
-
-  <form id="authForm">
-    <div class="field hidden" id="nameField">
-      <label for="fullName">Full name</label>
-      <input type="text" id="fullName" placeholder="What should AbhayAI call you?" autocomplete="name">
+  <div id="formContent">
+    <div class="brand-row">
+      <img class="brand-mark" src="favicon.png" alt="AbhayAI">
+      <div class="brand-name">AbhayAI</div>
     </div>
 
-    <div class="field">
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
-    </div>
+    <h1 class="headline" id="formTitle">Welcome back</h1>
+    <p class="subhead" id="formSub">Sign in to pick up where you left off.</p>
 
-    <div class="field">
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required minlength="6">
-      <div class="pw-rules hidden" id="pwRules">
-        <span class="pw-rule" id="ruleLen">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          6+ characters
-        </span>
+    <form id="authForm">
+      <div class="field hidden" id="nameField">
+        <label for="fullName">Full name</label>
+        <input type="text" id="fullName" placeholder="What should AbhayAI call you?" autocomplete="name">
       </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required minlength="8">
+        <div class="pw-rules hidden" id="pwRules">
+          <span class="pw-rule" id="ruleLen">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            8+ characters
+          </span>
+          <span class="pw-rule" id="ruleNum">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            A number
+          </span>
+          <span class="pw-rule" id="ruleSpecial">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            A special character
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span id="submitBtnLabel">Sign in</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+
+    <div class="divider">or continue with</div>
+
+    <button class="google-btn" id="googleBtn">
+      <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.6-.2-2.3H12v4.5h6.5c-.1 1-.7 2.6-2 3.6l3.2 2.5c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 24c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.9-1.8-5.7-4.2H3v2.6C4.6 21.4 8 24 12 24z"/><path fill="#FBBC05" d="M6.3 14.9c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.3H3c-.6 1.2-1 2.7-1 4.6s.4 3.4 1 4.6l3.3-2.6z"/><path fill="#EA4335" d="M12 5.4c1.5 0 2.8.5 3.8 1.5l2.8-2.8C16.9 2.4 14.6 1.5 12 1.5 8 1.5 4.6 4.1 3 8.3l3.3 2.6C7.1 8.5 9.4 5.4 12 5.4z"/></svg>
+      Google
+    </button>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="toggle-row">
+      <span id="toggleText">Don't have an account?</span>
+      <button type="button" id="toggleBtn">Sign up</button>
     </div>
 
-    <button type="submit" class="submit-btn" id="submitBtn">
-      Sign in
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </form>
-
-  <div class="divider">or continue with</div>
-
-  <button class="google-btn" id="googleBtn">
-    <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.6-.2-2.3H12v4.5h6.5c-.1 1-.7 2.6-2 3.6l3.2 2.5c1.9-1.7 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 24c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.9-1.8-5.7-4.2H3v2.6C4.6 21.4 8 24 12 24z"/><path fill="#FBBC05" d="M6.3 14.9c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.3H3c-.6 1.2-1 2.7-1 4.6s.4 3.4 1 4.6l3.3-2.6z"/><path fill="#EA4335" d="M12 5.4c1.5 0 2.8.5 3.8 1.5l2.8-2.8C16.9 2.4 14.6 1.5 12 1.5 8 1.5 4.6 4.1 3 8.3l3.3 2.6C7.1 8.5 9.4 5.4 12 5.4z"/></svg>
-    Google
-  </button>
-
-  <div class="error-box" id="errorBox"></div>
-
-  <div class="toggle-row">
-    <span id="toggleText">Don't have an account?</span>
-    <button type="button" id="toggleBtn">Sign up</button>
+    <div class="guest-row">
+      <button type="button" id="guestBtn">Continue without an account</button>
+    </div>
   </div>
 </div>
 
@@ -214,9 +244,15 @@
       <p>Ask questions, brainstorm, debug code, or just think out loud. AbhayAI remembers your chats so you never lose a thread.</p>
     </div>
 
-    <div class="float-card card-fast">
-      <div class="big">&lt;1s</div>
-      <div class="lbl">Typical response start</div>
+    <div class="stat-row">
+      <div class="float-card card-fast">
+        <div class="big">&lt;1s</div>
+        <div class="lbl">Typical response start</div>
+      </div>
+      <div class="float-card card-private">
+        <div class="lbl">🔒 Private by default</div>
+        <div class="sub">Tied to your account only.</div>
+      </div>
     </div>
 
     <div class="float-card card-chat">
@@ -229,11 +265,6 @@
         <div class="bubble">Sure — the issue is a missing return statement on line 12...</div>
       </div>
     </div>
-
-    <div class="float-card card-private">
-      <div class="lbl">🔒 Private by default</div>
-      <div class="sub">Your chats are tied to your account only. Nobody else can see them.</div>
-    </div>
   </div>
 </div>
 
@@ -242,6 +273,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 <script src="firebase-init.js"></script>
 <script>
+  const formContent = document.getElementById('formContent');
   const authForm = document.getElementById('authForm');
   const nameField = document.getElementById('nameField');
   const fullNameInput = document.getElementById('fullName');
@@ -249,9 +281,13 @@
   const passwordInput = document.getElementById('password');
   const pwRules = document.getElementById('pwRules');
   const ruleLen = document.getElementById('ruleLen');
+  const ruleNum = document.getElementById('ruleNum');
+  const ruleSpecial = document.getElementById('ruleSpecial');
   const submitBtn = document.getElementById('submitBtn');
+  const submitBtnLabel = document.getElementById('submitBtnLabel');
   const errorBox = document.getElementById('errorBox');
   const googleBtn = document.getElementById('googleBtn');
+  const guestBtn = document.getElementById('guestBtn');
   const toggleBtn = document.getElementById('toggleBtn');
   const toggleText = document.getElementById('toggleText');
   const formTitle = document.getElementById('formTitle');
@@ -274,10 +310,16 @@
       'auth/wrong-password': 'Incorrect password.',
       'auth/invalid-credential': 'Incorrect email or password.',
       'auth/email-already-in-use': 'An account already exists with that email.',
-      'auth/weak-password': 'Password should be at least 6 characters.',
+      'auth/weak-password': 'Password should be at least 8 characters.',
       'auth/too-many-requests': 'Too many attempts. Try again in a bit.'
     };
     return map[err.code] || err.message || 'Something went wrong. Please try again.';
+  }
+
+  function playSlideIn() {
+    formContent.classList.remove('slide-in');
+    void formContent.offsetWidth; // force reflow so the animation can restart
+    formContent.classList.add('slide-in');
   }
 
   function setMode(next) {
@@ -289,7 +331,7 @@
       passwordInput.setAttribute('autocomplete', 'new-password');
       formTitle.textContent = 'Create your account';
       formSub.textContent = "A couple of details and you're in.";
-      submitBtn.childNodes[0].textContent = 'Sign up ';
+      submitBtnLabel.textContent = 'Sign up';
       toggleText.textContent = 'Already have an account?';
       toggleBtn.textContent = 'Sign in';
     } else {
@@ -298,17 +340,26 @@
       passwordInput.setAttribute('autocomplete', 'current-password');
       formTitle.textContent = 'Welcome back';
       formSub.textContent = 'Sign in to pick up where you left off.';
-      submitBtn.childNodes[0].textContent = 'Sign in ';
+      submitBtnLabel.textContent = 'Sign in';
       toggleText.textContent = "Don't have an account?";
       toggleBtn.textContent = 'Sign up';
     }
+    playSlideIn();
   }
 
   toggleBtn.addEventListener('click', () => setMode(mode === 'signin' ? 'signup' : 'signin'));
 
-  passwordInput.addEventListener('input', () => {
-    ruleLen.classList.toggle('met', passwordInput.value.length >= 6);
-  });
+  function checkPasswordRules() {
+    const v = passwordInput.value;
+    const lenOk = v.length >= 8;
+    const numOk = /[0-9]/.test(v);
+    const specialOk = /[^A-Za-z0-9]/.test(v);
+    ruleLen.classList.toggle('met', lenOk);
+    ruleNum.classList.toggle('met', numOk);
+    ruleSpecial.classList.toggle('met', specialOk);
+    return lenOk && numOk && specialOk;
+  }
+  passwordInput.addEventListener('input', checkPasswordRules);
 
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -318,13 +369,16 @@
     const password = passwordInput.value;
     const name = fullNameInput.value.trim();
 
-    if (mode === 'signup' && !name) {
-      showError('Please tell us what to call you.');
-      return;
+    if (mode === 'signup') {
+      if (!name) { showError('Please tell us what to call you.'); return; }
+      if (!checkPasswordRules()) {
+        showError('Password needs 8+ characters, a number, and a special character.');
+        return;
+      }
     }
 
     submitBtn.disabled = true;
-    submitBtn.childNodes[0].textContent = mode === 'signup' ? 'Creating account… ' : 'Signing in… ';
+    submitBtnLabel.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…';
 
     try {
       if (mode === 'signup') {
@@ -337,7 +391,7 @@
     } catch (err) {
       showError(friendlyError(err));
       submitBtn.disabled = false;
-      submitBtn.childNodes[0].textContent = mode === 'signup' ? 'Sign up ' : 'Sign in ';
+      submitBtnLabel.textContent = mode === 'signup' ? 'Sign up' : 'Sign in';
     }
   });
 
@@ -349,6 +403,20 @@
       window.location.href = 'index.html';
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') showError(friendlyError(err));
+    }
+  });
+
+  guestBtn.addEventListener('click', async () => {
+    clearError();
+    guestBtn.disabled = true;
+    guestBtn.textContent = 'Continuing…';
+    try {
+      await auth.signInAnonymously();
+      window.location.href = 'index.html';
+    } catch (err) {
+      showError(friendlyError(err));
+      guestBtn.disabled = false;
+      guestBtn.textContent = 'Continue without an account';
     }
   });
 </script>
