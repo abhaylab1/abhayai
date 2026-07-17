@@ -18,22 +18,26 @@
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
+  html { height: 100%; }
   body {
+    margin: 0; min-height: 100vh; min-height: 100dvh;
     background: var(--bg); color: var(--ink); font-family: var(--sans);
     display: grid; grid-template-columns: minmax(340px, 480px) 1fr;
   }
   @media (max-width: 860px) {
-    body { grid-template-columns: 1fr; }
+    body { grid-template-columns: 1fr; display: block; min-height: 100dvh; }
     .showcase { display: none; }
   }
 
   /* ---------- LEFT: form ---------- */
   .form-side {
     display: flex; flex-direction: column; justify-content: center;
-    padding: 48px 56px; position: relative; overflow: hidden;
+    padding: 48px 56px; position: relative; overflow-x: hidden;
+    min-height: 100vh; min-height: 100dvh;
   }
-  @media (max-width: 480px) { .form-side { padding: 32px 24px; } }
+  @media (max-width: 480px) {
+    .form-side { padding: 28px 20px; min-height: auto; }
+  }
 
   .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
   .brand-mark { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
@@ -294,6 +298,8 @@
   const formSub = document.getElementById('formSub');
 
   let mode = 'signin';
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'signup') mode = 'signup';
 
   auth.onAuthStateChanged((user) => {
     if (user) window.location.href = 'index.html';
@@ -419,6 +425,9 @@
       guestBtn.textContent = 'Continue without an account';
     }
   });
+
+  // Sync the form to whatever mode we arrived with (e.g. from landing.html)
+  if (mode === 'signup') setMode('signup');
 </script>
 </body>
 </html>
