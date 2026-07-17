@@ -21,9 +21,8 @@ export default {
 async function handleChat(request, env) {
   const origin = request.headers.get('Origin') || '';
   const allowedOrigins = [
-    'https://abhaylab.fun',
-    'https://www.abhaylab.fun',
-    'https://abhayai.abhaylabinquiries.workers.dev' // remove once abhaylab.fun is connected
+    'https://abhayai.abhaylabinquiries.workers.dev'
+    // Add your permanent custom domain here once you set one up
   ];
   if (origin && !allowedOrigins.includes(origin)) {
     return new Response(JSON.stringify({ error: 'Forbidden origin' }), {
@@ -62,7 +61,7 @@ async function handleChat(request, env) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + env.OPENROUTER_API_KEY,
-      'HTTP-Referer': 'https://abhaylab.fun',
+      'HTTP-Referer': 'https://abhayai.abhaylabinquiries.workers.dev',
       'X-Title': 'AbhayAI'
     },
     body: JSON.stringify({ model, messages, stream: !!stream })
